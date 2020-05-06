@@ -31,7 +31,7 @@ http.request<IP>({
 
 ```
 
-You can optionally provide headers in every request..
+You can optionally provide headers in every request...
 
 ```
   ...
@@ -46,7 +46,7 @@ You can optionally provide headers in every request..
 http.config.headers.append('Authorization', token);
 ```
 
-You can pass a root in `constructor`. So when you provide an url at the request, it will be concatenated with the root. As it follows:
+You can provide a root in `constructor`. So when you give an url to request, it will be concatenated with the root. As it follows:
 
 ```
 const usersApi = new HttpHandler('https://api.example.com');
@@ -62,6 +62,8 @@ const promise = usersApi.get<User>({
 Note that you don't need to put a slash (/) before the URI. It's optional.
 
 ### `Service` class
+
+You can use the basic methods in `Service` for managing CRUD operations or make your own class extending `Service`. Example:
 
 ```
 
