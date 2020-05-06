@@ -1,6 +1,6 @@
 {
   "name": "http-service-ts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Customizable service writen in TypeScript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -8,7 +8,7 @@
     "test": "jest --config jestconfig.json --passWithNoTests",
     "build": "tsc",
     "format": "prettier --write \"src/*.ts\"",
-    "lint": "tslint -p tsconfig.json", 
+    "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
@@ -19,7 +19,12 @@
     "type": "git",
     "url": "git+https://github.com/luizfilipezs/http-service-ts.git"
   },
-  "keywords": ["service", "http", "handler", "client"],
+  "keywords": [
+    "service",
+    "http",
+    "handler",
+    "client"
+  ],
   "author": "luizfilipezs",
   "license": "ISC",
   "bugs": {
