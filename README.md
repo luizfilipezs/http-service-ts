@@ -2,6 +2,8 @@
 
 ## Installation
 
+This project is available in [NPM](https://www.npmjs.com/package/http-service-ts):
+
 `npm i http-service-ts`
 
 ## How to use
