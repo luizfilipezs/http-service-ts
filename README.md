@@ -2,7 +2,7 @@
 
 ## Installation
 
-This project is available in [NPM](https://www.npmjs.com/package/http-service-ts):
+This project is available in [npm](https://www.npmjs.com/package/http-service-ts):
 
 `npm i http-service-ts`
 
