@@ -61,7 +61,7 @@ const promise = usersApi.get<User>({
 
 Note that you don't need to put a slash (/) before the URI. It's optional.
 
-If server only supports requests with a `l` at the final of the URL, set `appendSlash` property `true`:
+If server only supports requests with a `/` at the final of the URL, set `appendSlash` property to `true`:
 
 ```
 const api = new HttpHandler('https://api.example.com');
