@@ -8,7 +8,6 @@ import { HttpHandler } from './http.handler';
  * request when extending this class.
  */
 export class Service<T> extends HttpHandler {
-
   /**
    * @param {string} [apiRoot] Get the path of a collection (e.g. `"https://api.example.com/users/"`)
    */
@@ -64,7 +63,6 @@ export class Service<T> extends HttpHandler {
   delete(id: number): Promise<{}> {
     return this.request<{}>({ method: 'delete', id });
   }
-  
 }
 
 /**

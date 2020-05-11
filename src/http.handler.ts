@@ -25,11 +25,6 @@ interface HttpConfig {
 }
 
 /**
- * Define a type for response content.
- */
-type responseType = 'json' | 'blob' | 'text';
-
-/**
  * @class
  *
  * Allows to make requests and save some configurations for future
@@ -39,7 +34,7 @@ type responseType = 'json' | 'blob' | 'text';
  */
 export class HttpHandler {
   /**
-   * 
+   *
    */
   public config: HttpConfig;
 
@@ -60,7 +55,7 @@ export class HttpHandler {
    *
    * @return {Promise<T>} Promise of type T
    */
-  public async request<T>(args: RequestArgs<T>, format?: responseType): Promise<T> {
+  public async request<T>(args: RequestArgs<T>): Promise<T> {
     let url = '';
 
     if (this.root) url = this.root; // Add root if there's one
@@ -76,7 +71,7 @@ export class HttpHandler {
     };
     if (args.method !== 'get' && args.obj) requestInit.body = JSON.stringify(args.obj);
 
-    return await fetch(url, requestInit).then((response) => this.parse<T>(response, format) as Promise<T>);
+    return await fetch(url, requestInit).then((response) => this.parse<T>(response) as Promise<T>);
   }
 
   /**
@@ -94,7 +89,7 @@ export class HttpHandler {
    *
    * @return {Promise<T | string | object | Blob>} New promise with the content type defined in `format` param
    */
-  private parse<T>(response: Response, format: responseType = 'json'): Promise<T | string | object | Blob> {
+  private parse<T>(response: Response): Promise<T | string | object | Blob> {
     const contentType = response.headers.get('content-type');
 
     if (contentType === 'application/json')
@@ -105,18 +100,20 @@ export class HttpHandler {
       // TEXT
       return response.text();
 
-    if (!contentType) return new Promise((resolve, reject?) => resolve({}));
+    if (!contentType)
+      // EMPTY OBJECT
+      return new Promise((resolve, reject?) => resolve({}));
 
+    // BLOB
     return response.blob();
   }
 
   /**
    * @param {Promise<T>[]} promises Promises to be resolved together
-   * 
+   *
    * @return {Promise<T>[]} Array of promises
    */
   public async join<T>(...promises: Promise<T>[]) {
     return await Promise.all(promises);
   }
-
 }
