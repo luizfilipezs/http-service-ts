@@ -46,7 +46,7 @@ You can optionally provide headers in every request...
 http.config.headers.append('Authorization', token);
 ```
 
-You can provide a root in `constructor`. So when you give an url to request, it will be concatenated with the root. As it follows:
+You can provide a root in `constructor`. So when you give an url to request, it will be concatenated with the root. As follows:
 
 ```
 const usersApi = new HttpHandler('https://api.example.com');
@@ -55,11 +55,21 @@ const promise = usersApi.get<User>({
   url: 'users',
   method: 'get',
   id: 1
-}); // Will fetch https://api.example.com/users
+}); // Will fetch https://api.example.com/users/1
 
 ```
 
 Note that you don't need to put a slash (/) before the URI. It's optional.
+
+If server only supports requests with a `l` at the final of the URL, set `appendSlash` property `true`:
+
+```
+const api = new HttpHandler('https://api.example.com');
+
+api.config.appendSlash = true;
+
+api.request<User>({ url: 'users', id: 1 }); // Will fetch https://api.example.com/users/1/
+```
 
 ### `Service` class
 
@@ -79,8 +89,9 @@ class ProductService extends Service<Product> {
     super('https://api.example.com/products');
   }
   
-  yourCustomMethod(): void {
-    // code
+  getOffers() {
+    // GET https://api.example.com/products/offers
+    return this.request<Product[]>({ url: 'offers', method: 'get' })
   }
   
 }
@@ -92,7 +103,7 @@ class HomeView {
   
   constructor(private productService: ProductService) { }
   
-  getProducts(): void {
+  getProducts() {
     this.productService.get()
       .then(
         (products: Product[]) => this.products = products,
