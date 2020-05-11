@@ -4,7 +4,7 @@
  */
 interface RequestArgs<T> {
   url?: string;
-  method: 'get' | 'post' | 'put' | 'delete';
+  method: 'get' | 'post' | 'put' | 'patch' | 'delete';
   headers?: Headers;
   obj?: T;
   id?: number | string;
@@ -38,6 +38,9 @@ type responseType = 'json' | 'blob' | 'text';
  * fetch this URL + the URL passed in `RequestArgs` interface.
  */
 export class HttpHandler {
+  /**
+   * 
+   */
   public config: HttpConfig;
 
   /**
@@ -52,7 +55,7 @@ export class HttpHandler {
   }
 
   /**
-   * @param {RequestArgs<T>} [args] Provide request configurations
+   * @param {RequestArgs<T>} args Provide request configurations
    * @param {responseType} [format] Define a type for response (e.g. `'json'`)
    *
    * @return {Promise<T>} Promise of type T
@@ -77,7 +80,7 @@ export class HttpHandler {
   }
 
   /**
-   * @param {string} [start] First piece of URL (API root). E.g. `'https://api.example.com'`
+   * @param {string} start First piece of URL (API root). E.g. `'https://api.example.com'`
    * @param {string} [final] Last piece of URL. E.g. `'users/12'`
    *
    * @return {string} URL with a slash between its first and last pieces or a slash at the final of the first.
@@ -86,12 +89,12 @@ export class HttpHandler {
     final ? start.endsWith('/') || final.startsWith('/') : start.endsWith('/');
 
   /**
-   * @param {Response} [response] Get a response to turn into JSON, Text or Blob
+   * @param {Response} response Get a response to turn into JSON, Text or Blob
    * @param {responseType} [format] Get the Content-Type that must be returned
    *
-   * @return {Promise<T | string | {} | Blob>} New promise with the content type defined in `format` param
+   * @return {Promise<T | string | object | Blob>} New promise with the content type defined in `format` param
    */
-  private parse<T>(response: Response, format: responseType = 'json'): Promise<T | string | {} | Blob> {
+  private parse<T>(response: Response, format: responseType = 'json'): Promise<T | string | object | Blob> {
     const contentType = response.headers.get('content-type');
 
     if (contentType === 'application/json')
@@ -106,4 +109,14 @@ export class HttpHandler {
 
     return response.blob();
   }
+
+  /**
+   * @param {Promise<T>[]} promises Promises to be resolved together
+   * 
+   * @return {Promise<T>[]} Array of promises
+   */
+  public async join<T>(...promises: Promise<T>[]) {
+    return await Promise.all(promises);
+  }
+
 }

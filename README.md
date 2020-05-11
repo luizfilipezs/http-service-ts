@@ -68,12 +68,26 @@ const api = new HttpHandler('https://api.example.com');
 
 api.config.appendSlash = true;
 
-api.request<User>({ url: 'users', id: 1 }); // Will fetch https://api.example.com/users/1/
+api.request<User>({ url: 'users', method: 'get', id: 1 }); // Will fetch https://api.example.com/users/1/
+```
+
+#### `join()` method
+
+Allows to combine multiple promises and get their responses inside another. Example:
+
+```
+const getUsers = api.request<User[]>({ url: 'users', method: 'get' });
+const getProducts = api.request<Product[]>({ url: 'products', method: 'get' });
+
+api.join([getUsers, getProducts])
+  .then([users, products] => console.log({ users, products });
 ```
 
 ### `Service` class
 
-You can use the basic methods in `Service` for managing CRUD operations or make your own class extending `Service`. Example:
+The methods provided in `Service` class are: `get`, `getById`, `post`, `put`, `patch` and `delete`.
+
+You can use these methods for managing CRUD operations or write your own class extending `Service`. Example:
 
 ```
 

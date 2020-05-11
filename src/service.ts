@@ -8,6 +8,7 @@ import { HttpHandler } from './http.handler';
  * request when extending this class.
  */
 export class Service<T> extends HttpHandler {
+
   /**
    * @param {string} [apiRoot] Get the path of a collection (e.g. `"https://api.example.com/users/"`)
    */
@@ -48,10 +49,27 @@ export class Service<T> extends HttpHandler {
   }
 
   /**
+   * @param {Partial<T>} [obj] Object to update
+   * @param {number} [id] ID of object that will be updated
+   * @return {Promise<Partial<T>>} Updated part of object
+   */
+  patch(obj: Partial<T>, id: number) {
+    return this.request<Partial<T>>({ method: 'patch', obj, id });
+  }
+
+  /**
    * @param {number} [id] ID of object that will be deleted
    * @return {Promise<{}>} Empty object
    */
   delete(id: number): Promise<{}> {
     return this.request<{}>({ method: 'delete', id });
   }
+  
 }
+
+/**
+ * An partial object based in another
+ */
+type Partial<T> = {
+  [P in keyof T]?: T[P];
+};
