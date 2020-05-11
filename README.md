@@ -2,8 +2,6 @@
 
 ## Installation
 
-Inside your project, run:
-
 `npm i http-service-ts`
 
 ## How to use
