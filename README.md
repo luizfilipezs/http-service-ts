@@ -2,7 +2,7 @@
 
 ## Installation
 
-This project is available in [npm](https://www.npmjs.com/package/http-service-ts):
+This package is available in [npm](https://www.npmjs.com/package/http-service-ts). Install it inside your project with the following command:
 
 `npm i http-service-ts`
 
