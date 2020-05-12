@@ -71,18 +71,6 @@ api.config.appendSlash = true;
 api.request<User>({ url: 'users', method: 'get', id: 1 }); // Will fetch https://api.example.com/users/1/
 ```
 
-#### `join()` method
-
-Allows to combine multiple promises and get their responses inside another. Example:
-
-```
-const getUsers = api.request<User[]>({ url: 'users', method: 'get' });
-const getProducts = api.request<Product[]>({ url: 'products', method: 'get' });
-
-api.join([getUsers, getProducts])
-  .then([users, products] => console.log({ users, products });
-```
-
 ### `Service` class
 
 The methods provided in `Service` class are: `get`, `getById`, `post`, `put`, `patch` and `delete`.
@@ -118,12 +106,20 @@ class HomeView {
   constructor(private productService: ProductService) { }
   
   getProducts() {
-    this.productService.get()
-      .then(
-        (products: Product[]) => this.products = products,
-        (error) => this.errorMessage = error
-      );
+    this.setProducts(this.productService.get());
   }
+
+  getOffers() {
+    this.setProducts(this.productService.getOffers());
+  }
+
+  private setProducts(promise: Promise<Product[]>) {
+    promise
+    .then(
+      (products) => this.products = products,
+      (error) => this.errorMessage = 'There was an error trying to request products!'
+    );
+  } 
   
   postProduct(obj: Product) {
     this.productService.post(obj)

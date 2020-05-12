@@ -7,19 +7,19 @@ interface RequestArgs<T> {
   method: 'get' | 'post' | 'put' | 'patch' | 'delete';
   headers?: Headers;
   obj?: T;
-  id?: number | string;
+  id?: number;
   cors?: boolean;
 }
 
 /**
  * Define basic configuration for future requests, as headers
  * and a boolean that allow `request()` method to know if it is necessary
- * to append a slash to the final of the URL.
+ * to append a slash in the end of the URL.
  */
 interface HttpConfig {
   headers: Headers;
   /**
-   * If `true` a slash will always be appended to the end of the URL (when there is no one)
+   * If `true` a slash will always be appended to the end of the URL (when there is no one).
    */
   appendSlash: boolean;
 }
@@ -34,7 +34,7 @@ interface HttpConfig {
  */
 export class HttpHandler {
   /**
-   *
+   * Configure rules that will be aplied in every request.
    */
   public config: HttpConfig;
 
@@ -58,12 +58,14 @@ export class HttpHandler {
   public async request<T>(args: RequestArgs<T>): Promise<T> {
     let url = '';
 
+    // Configure URL
     if (this.root) url = this.root; // Add root if there's one
     if (this.root && args.url) url += this.hasSlash(this.root, args.url) ? args.url : `/${args.url}`; // Concat root with URI if they were provided
     if (!this.root && args.url) url = args.url; // fetch URL provided in arguments
+    if (this.config.appendSlash && !this.hasSlash(url)) url += '/'; // add a slash
+    if (args.id) url += this.config.appendSlash ? `${args.id}/` : args.id.toString(); // add ID
 
-    if (this.config.appendSlash && !this.hasSlash(url)) url += '/';
-
+    // Configure request
     const requestInit: RequestInit = {
       method: args.method,
       headers: args.headers || this.config.headers,
@@ -71,6 +73,7 @@ export class HttpHandler {
     };
     if (args.method !== 'get' && args.obj) requestInit.body = JSON.stringify(args.obj);
 
+    // Request and parse response
     return await fetch(url, requestInit).then((response) => this.parse<T>(response) as Promise<T>);
   }
 
@@ -89,7 +92,7 @@ export class HttpHandler {
    *
    * @return {Promise<T | string | object | Blob>} New promise with the content type defined in `format` param
    */
-  private parse<T>(response: Response): Promise<T | string | object | Blob> {
+  private parse<T>(response: Response): Promise<T | string | null | Blob> {
     const contentType = response.headers.get('content-type');
 
     if (contentType === 'application/json')
@@ -101,19 +104,10 @@ export class HttpHandler {
       return response.text();
 
     if (!contentType)
-      // EMPTY OBJECT
-      return new Promise((resolve, reject?) => resolve({}));
+      // NULL
+      return new Promise((resolve, reject?) => resolve(null));
 
     // BLOB
     return response.blob();
-  }
-
-  /**
-   * @param {Promise<T>[]} promises Promises to be resolved together
-   *
-   * @return {Promise<T>[]} Array of promises
-   */
-  public async join<T>(...promises: Promise<T>[]) {
-    return await Promise.all(promises);
   }
 }

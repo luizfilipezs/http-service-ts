@@ -16,10 +16,10 @@ export class Service<T> extends HttpHandler {
   }
 
   /**
-   * @return {Promise<T | T[]>} An object promise or array of objects promise
+   * @return {Promise<T[]>} An object promise or array of objects promise
    */
-  get(): Promise<T | T[]> {
-    return this.request<T | T[]>({ method: 'get' });
+  get(): Promise<T[]> {
+    return this.request<T[]>({ method: 'get' });
   }
 
   /**
@@ -52,7 +52,7 @@ export class Service<T> extends HttpHandler {
    * @param {number} [id] ID of object that will be updated
    * @return {Promise<Partial<T>>} Updated part of object
    */
-  patch(obj: Partial<T>, id: number) {
+  patch(obj: Partial<T>, id: number): Promise<Partial<T>> {
     return this.request<Partial<T>>({ method: 'patch', obj, id });
   }
 
@@ -60,13 +60,13 @@ export class Service<T> extends HttpHandler {
    * @param {number} [id] ID of object that will be deleted
    * @return {Promise<{}>} Empty object
    */
-  delete(id: number): Promise<{}> {
-    return this.request<{}>({ method: 'delete', id });
+  delete(id: number): Promise<null> {
+    return this.request<null>({ method: 'delete', id });
   }
 }
 
 /**
- * An partial object based in another
+ * A partial object based in another
  */
 type Partial<T> = {
   [P in keyof T]?: T[P];
