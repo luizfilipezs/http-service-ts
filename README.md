@@ -71,6 +71,21 @@ api.config.appendSlash = true;
 api.request<User>({ url: 'users', method: 'get', id: 1 }); // Will fetch https://api.example.com/users/1/
 ```
 
+Let's create our first example again with a different syntax. You can use search params:
+
+```
+const http = new HttpHandler('https://api6.ipify.org');
+
+http.request<IP>({
+  method: 'get',
+  params: {
+    format: 'json'
+  }
+})
+.then((response) => console.log(response.ip);
+// fetch https://api6.ipify.org?format=json
+```
+
 ### `Service` class
 
 The methods provided in `Service` class are: `get`, `getById`, `post`, `put`, `patch` and `delete`.

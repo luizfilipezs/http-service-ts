@@ -9,21 +9,21 @@ import { HttpHandler } from './http.handler';
  */
 export class Service<T> extends HttpHandler {
   /**
-   * @param {string} [apiRoot] Get the path of a collection (e.g. `"https://api.example.com/users/"`)
+   * @param {string} apiRoot Collection path (e.g. `"https://api.example.com/users/"`)
    */
   constructor(apiRoot: string) {
     super(apiRoot);
   }
 
   /**
-   * @return {Promise<T[]>} An object promise or array of objects promise
+   * @return {Promise<T[]>} A promise of objects array
    */
   get(): Promise<T[]> {
     return this.request<T[]>({ method: 'get' });
   }
 
   /**
-   * @param {number} [id] Object ID to fetch
+   * @param {number} id Object ID to fetch
    * @return {Promise<T>} A promise of object
    */
   getById(id: number): Promise<T> {
@@ -31,7 +31,7 @@ export class Service<T> extends HttpHandler {
   }
 
   /**
-   * @param {T} [obj] Object to post
+   * @param {T} obj Object to post
    * @return {Promise<T>} Object posted
    */
   post(obj: T): Promise<T> {
@@ -39,8 +39,8 @@ export class Service<T> extends HttpHandler {
   }
 
   /**
-   * @param {T} [obj] Object to update
-   * @param {number} [id] ID of object that will be updated
+   * @param {T} obj Object to update
+   * @param {number} id ID of object that will be updated
    * @return {Promise<T>} Object updated
    */
   put(obj: T, id: number): Promise<T> {
@@ -48,8 +48,8 @@ export class Service<T> extends HttpHandler {
   }
 
   /**
-   * @param {Partial<T>} [obj] Object to update
-   * @param {number} [id] ID of object that will be updated
+   * @param {Partial<T>} obj Object to update
+   * @param {number} id ID of object that will be updated
    * @return {Promise<Partial<T>>} Updated part of object
    */
   patch(obj: Partial<T>, id: number): Promise<Partial<T>> {
@@ -57,7 +57,7 @@ export class Service<T> extends HttpHandler {
   }
 
   /**
-   * @param {number} [id] ID of object that will be deleted
+   * @param {number} id ID of object that will be deleted
    * @return {Promise<{}>} Empty object
    */
   delete(id: number): Promise<null> {
@@ -66,7 +66,7 @@ export class Service<T> extends HttpHandler {
 }
 
 /**
- * A partial object based in another
+ * A partial object of generic type.
  */
 type Partial<T> = {
   [P in keyof T]?: T[P];

@@ -8,7 +8,16 @@ interface RequestArgs<T> {
   headers?: Headers;
   obj?: T;
   id?: number;
+  /**
+   * Define request mode. `true` sets to `'cors'`
+   * and `false` sets to `'no-cors'`. When no one value
+   * is provided, mode is `'no-cors'`.
+   */
   cors?: boolean;
+  /**
+   * Object with search params (e.g. `{ q: 'code' }`)
+   */
+  params?: { [key: string]: string };
 }
 
 /**
@@ -51,19 +60,32 @@ export class HttpHandler {
 
   /**
    * @param {RequestArgs<T>} args Provide request configurations
-   * @param {responseType} [format] Define a type for response (e.g. `'json'`)
    *
    * @return {Promise<T>} Promise of type T
    */
   public async request<T>(args: RequestArgs<T>): Promise<T> {
     let url = '';
 
-    // Configure URL
-    if (this.root) url = this.root; // Add root if there's one
-    if (this.root && args.url) url += this.hasSlash(this.root, args.url) ? args.url : `/${args.url}`; // Concat root with URI if they were provided
-    if (!this.root && args.url) url = args.url; // fetch URL provided in arguments
-    if (this.config.appendSlash && !this.hasSlash(url)) url += '/'; // add a slash
-    if (args.id) url += this.config.appendSlash ? `${args.id}/` : args.id.toString(); // add ID
+    // Add root if there's one
+    if (this.root) url = this.root;
+    // Concat root with URI if they were provided
+    if (this.root && args.url) url += this.hasSlash(this.root, args.url) ? args.url : `/${args.url}`;
+    // fetch URL provided in arguments
+    if (!this.root && args.url) url = args.url;
+    // add a slash
+    if (this.config.appendSlash && !this.hasSlash(url)) url += '/';
+    // add ID
+    if (args.id) url += this.config.appendSlash ? `${args.id}/` : args.id.toString();
+
+    // Append search params to the end of URL
+    if (args.params) {
+      // Remove last slash and add a "?"
+      if (url.endsWith('/')) url = url.substring(0, url.length - 1);
+      url += '?';
+      // Add params and remove last "&"
+      for (const key in args.params) url += `${key}=${args.params[key]}&`;
+      url = url.substring(0, url.length - 1);
+    }
 
     // Configure request
     const requestInit: RequestInit = {
@@ -71,6 +93,8 @@ export class HttpHandler {
       headers: args.headers || this.config.headers,
       mode: args.cors === false ? 'no-cors' : 'cors',
     };
+
+    // Add body if there is one
     if (args.method !== 'get' && args.obj) requestInit.body = JSON.stringify(args.obj);
 
     // Request and parse response
@@ -87,10 +111,9 @@ export class HttpHandler {
     final ? start.endsWith('/') || final.startsWith('/') : start.endsWith('/');
 
   /**
-   * @param {Response} response Get a response to turn into JSON, Text or Blob
-   * @param {responseType} [format] Get the Content-Type that must be returned
+   * @param {Response} response Response to turn into JSON, Text or Blob
    *
-   * @return {Promise<T | string | object | Blob>} New promise with the content type defined in `format` param
+   * @return {Promise<T | string | null | Blob>} Promise with formatted content
    */
   private parse<T>(response: Response): Promise<T | string | null | Blob> {
     const contentType = response.headers.get('content-type');
@@ -105,7 +128,7 @@ export class HttpHandler {
 
     if (!contentType)
       // NULL
-      return new Promise((resolve, reject?) => resolve(null));
+      return new Promise((resolve) => resolve(null));
 
     // BLOB
     return response.blob();
