@@ -65,10 +65,13 @@ If server only supports requests with a `/` at the final of the URL, set `append
 
 ```
 const api = new HttpHandler('https://api.example.com');
-
 api.config.appendSlash = true;
 
-api.request<User>({ url: 'users', method: 'get', id: 1 }); // Will fetch https://api.example.com/users/1/
+api.request<User>({
+  url: 'users',
+  method: 'get',
+  id: 1
+}); // Will fetch https://api.example.com/users/1/
 ```
 
 Let's create our first example again with a different syntax. You can use search params:
@@ -140,6 +143,19 @@ class HomeView {
     this.productService.post(obj)
       .then(console.log, console.error);
   }
+  
 }
 
+```
+
+### Prevent errors
+
+When running this package on Node.js you can get an error because of `Headers` class.
+
+This can be easily fixed with the following lines:
+
+```
+const fetch = require("node-fetch");
+global.fetch = fetch;
+global.Headers = fetch.Headers;
 ```

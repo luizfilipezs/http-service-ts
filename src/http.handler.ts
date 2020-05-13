@@ -9,11 +9,10 @@ interface RequestArgs<T> {
   obj?: T;
   id?: number;
   /**
-   * Define request mode. `true` sets to `'cors'`
-   * and `false` sets to `'no-cors'`. When no one value
-   * is provided, mode is `'no-cors'`.
+   * Define request mode. `true` sets to `'no-cors'`.
+   * If `null` request mode will be `'cors'`.
    */
-  cors?: boolean;
+  noCors?: true;
   /**
    * Object with search params (e.g. `{ q: 'code' }`)
    */
@@ -91,24 +90,25 @@ export class HttpHandler {
     const requestInit: RequestInit = {
       method: args.method,
       headers: args.headers || this.config.headers,
-      mode: args.cors === false ? 'no-cors' : 'cors',
+      mode: args.noCors === true ? 'no-cors' : 'cors'
     };
 
     // Add body if there is one
     if (args.method !== 'get' && args.obj) requestInit.body = JSON.stringify(args.obj);
 
     // Request and parse response
-    return await fetch(url, requestInit).then((response) => this.parse<T>(response) as Promise<T>);
+    return await fetch(url, requestInit)
+      .then((response) => this.parse<T>(response) as Promise<T>);
   }
 
   /**
    * @param {string} start First piece of URL (API root). E.g. `'https://api.example.com'`
    * @param {string} [final] Last piece of URL. E.g. `'users/12'`
    *
-   * @return {string} URL with a slash between its first and last pieces or a slash at the final of the first.
+   * @return {string} URL with a slash between its first and last pieces or a slash at the end of the first.
    */
-  private hasSlash = (start: string, final?: string) =>
-    final ? start.endsWith('/') || final.startsWith('/') : start.endsWith('/');
+  private hasSlash = (start: string, end?: string) =>
+    end ? start.endsWith('/') || end.startsWith('/') : start.endsWith('/');
 
   /**
    * @param {Response} response Response to turn into JSON, Text or Blob
