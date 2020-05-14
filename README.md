@@ -2,18 +2,30 @@
 
 ## Installation
 
-This package is available in [npm](https://www.npmjs.com/package/http-service-ts). Install it inside your project with the following command:
+This package is available in [npm](https://www.npmjs.com/package/http-service-ts). Install it in your project with the following command:
 
 `npm i http-service-ts`
+
+### Import
+
+```js
+const { HttpHandler, Service } = require('http-service-ts');
+```
+
+Or
+```ts
+import { HttpHandler, Service } from 'http-service-ts';
+```
 
 ## How to use
 
 ### `HttpHandler` class
 
+Allows to make requests and get their responses formatted. Returns new promise with content as `JSON`, text (`string`), `Blob` or `null`.
+
 Basic usage:
 
-```
-
+```ts
 interface IP {
   ip: string;
 }
@@ -24,16 +36,17 @@ http.request<IP>({
   url: 'https://api6.ipify.org?format=json',
   method: 'get'
 })
-.then(
-  (response) => console.log(response.ip),
-  (error) => console.error(`There was an error: ${error}`)
-);
-
+  .then(
+    (response) => console.log(response.ip),
+    (error) => console.error(`There was an error: ${error}`)
+  );
 ```
+
+#### Headers
 
 You can optionally provide headers in every request...
 
-```
+```ts
   ...
   method: 'get',
   headers: new Headers(),
@@ -42,13 +55,15 @@ You can optionally provide headers in every request...
 
 ...or use fixed headers for all requests:
 
-```
+```ts
 http.config.headers.append('Authorization', token);
 ```
 
+#### API root
+
 You can provide a root in `constructor`. So when you give an url to request, it will be concatenated with the root. As follows:
 
-```
+```ts
 const usersApi = new HttpHandler('https://api.example.com');
 
 const promise = usersApi.get<User>({
@@ -56,14 +71,15 @@ const promise = usersApi.get<User>({
   method: 'get',
   id: 1
 }); // Will fetch https://api.example.com/users/1
-
 ```
 
 Note that you don't need to put a slash (/) before the URI. It's optional.
 
-If server only supports requests with a `/` at the final of the URL, set `appendSlash` property to `true`:
+#### `config.appendSlash`
 
-```
+If server only supports requests with a `/` at the final of the URL, set `appendSlash` property to `true` in configurations:
+
+```ts
 const api = new HttpHandler('https://api.example.com');
 api.config.appendSlash = true;
 
@@ -74,9 +90,11 @@ api.request<User>({
 }); // Will fetch https://api.example.com/users/1/
 ```
 
+#### Search params
+
 Let's create our first example again with a different syntax. You can use search params:
 
-```
+```ts
 const http = new HttpHandler('https://api6.ipify.org');
 
 http.request<IP>({
@@ -84,19 +102,18 @@ http.request<IP>({
   params: {
     format: 'json'
   }
-})
-.then((response) => console.log(response.ip);
+}).then((response) => console.log(response.ip));
+
 // fetch https://api6.ipify.org?format=json
 ```
 
 ### `Service` class
 
-The methods provided in `Service` class are: `get`, `getById`, `post`, `put`, `patch` and `delete`.
+The methods provided in `Service` class are: `get()`, `getById()`, `post()`, `put()`, `patch()` and `delete()`.
 
 You can use these methods for managing CRUD operations or write your own class extending `Service`. Example:
 
-```
-
+```ts
 interface Product {
   id?: number;
   name: string;
@@ -115,13 +132,25 @@ class ProductService extends Service<Product> {
   }
   
 }
-
+```
+Using in a view:
+```ts
 class HomeView {
   
-  products: Product[];
+  products: Product[] = [];
   errorMessage: string;
+
+  productService = new ProductService();
   
-  constructor(private productService: ProductService) { }
+  constructor() { }
+
+  private setProducts(promise: Promise<Product[]>) {
+    promise
+      .then(
+        (products) => this.products = products,
+        (error) => this.errorMessage = 'There was an error trying to request products!'
+      );
+  } 
   
   getProducts() {
     this.setProducts(this.productService.get());
@@ -130,14 +159,6 @@ class HomeView {
   getOffers() {
     this.setProducts(this.productService.getOffers());
   }
-
-  private setProducts(promise: Promise<Product[]>) {
-    promise
-    .then(
-      (products) => this.products = products,
-      (error) => this.errorMessage = 'There was an error trying to request products!'
-    );
-  } 
   
   postProduct(obj: Product) {
     this.productService.post(obj)
@@ -145,17 +166,17 @@ class HomeView {
   }
   
 }
-
 ```
 
-### Prevent errors
+## Prevent errors
 
 When running this package on Node.js you can get an error because of `Headers` class.
 
 This can be easily fixed with the following lines:
 
-```
-const fetch = require("node-fetch");
+```js
+const fetch = require('node-fetch');
+
 global.fetch = fetch;
 global.Headers = fetch.Headers;
 ```
