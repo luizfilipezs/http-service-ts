@@ -3,10 +3,27 @@
  * and how to do it.
  */
 interface RequestArgs<T> {
+  /**
+   * Full URL or last piece of it, if a root was provided
+   * in the constructor of `HttpHandler` class
+   */
   url?: string;
+  /**
+   * One of the main HTTP methods for managing objects in a table
+   */
   method: 'get' | 'post' | 'put' | 'patch' | 'delete';
+  /**
+   * Define headers for current request, ignoring fixed headers
+   * defined in `HttpHandler.config.headers`
+   */
   headers?: Headers;
+  /**
+   * Request body
+   */
   obj?: T;
+  /**
+   * ID of object (type `T`) in database collection
+   */
   id?: number;
   /**
    * Define request mode. `true` sets to `'no-cors'`.
@@ -25,6 +42,9 @@ interface RequestArgs<T> {
  * to append a slash in the end of the URL.
  */
 interface HttpConfig {
+  /**
+   * Define headers that will be used in every request.
+   */
   headers: Headers;
   /**
    * If `true` a slash will always be appended to the end of the URL (when there is no one).

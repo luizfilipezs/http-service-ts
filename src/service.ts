@@ -16,7 +16,7 @@ export class Service<T> extends HttpHandler {
   }
 
   /**
-   * @return {Promise<T[]>} A promise of objects array
+   * @return {Promise<T[]>} Promise with array of objets
    */
   get(): Promise<T[]> {
     return this.request<T[]>({ method: 'get' });
@@ -32,7 +32,7 @@ export class Service<T> extends HttpHandler {
 
   /**
    * @param {T} obj Object to post
-   * @return {Promise<T>} Object posted
+   * @return {Promise<T>} Posted object
    */
   post(obj: T): Promise<T> {
     return this.request<T>({ method: 'post', obj });
@@ -41,7 +41,7 @@ export class Service<T> extends HttpHandler {
   /**
    * @param {T} obj Object to update
    * @param {number} id ID of object that will be updated
-   * @return {Promise<T>} Object updated
+   * @return {Promise<T>} Updated object
    */
   put(obj: T, id: number): Promise<T> {
     return this.request<T>({ method: 'put', obj, id });
@@ -50,7 +50,7 @@ export class Service<T> extends HttpHandler {
   /**
    * @param {Partial<T>} obj Object to update
    * @param {number} id ID of object that will be updated
-   * @return {Promise<Partial<T>>} Updated part of object
+   * @return {Promise<Partial<T>>} Updated object part
    */
   patch(obj: Partial<T>, id: number): Promise<Partial<T>> {
     return this.request<Partial<T>>({ method: 'patch', obj, id });
@@ -58,7 +58,7 @@ export class Service<T> extends HttpHandler {
 
   /**
    * @param {number} id ID of object that will be deleted
-   * @return {Promise<{}>} Empty object
+   * @return {Promise<null>} Null
    */
   delete(id: number): Promise<null> {
     return this.request<null>({ method: 'delete', id });
