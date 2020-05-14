@@ -110,15 +110,14 @@ export class HttpHandler {
     const requestInit: RequestInit = {
       method: args.method,
       headers: args.headers || this.config.headers,
-      mode: args.noCors === true ? 'no-cors' : 'cors'
+      mode: args.noCors === true ? 'no-cors' : 'cors',
     };
 
     // Add body if there is one
     if (args.method !== 'get' && args.obj) requestInit.body = JSON.stringify(args.obj);
 
     // Request and parse response
-    return await fetch(url, requestInit)
-      .then((response) => this.parse<T>(response) as Promise<T>);
+    return await fetch(url, requestInit).then((response) => this.parse<T>(response) as Promise<T>);
   }
 
   /**
