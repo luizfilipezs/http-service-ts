@@ -1,13 +1,13 @@
-import { HttpHandler } from './http.handler';
+import { RequestParser } from './request.parser';
 
 /**
  * @class
  *
  * Customizable service that allow to perform main HTTP requests.
- * Extends `HttpHandler` class. So it's possible to add more types of
+ * Extends `RequestParser` class. So it's possible to add more types of
  * request when extending this class.
  */
-export class Service<T> extends HttpHandler {
+export class Service<T> extends RequestParser {
   /**
    * @param {string} apiRoot Collection path (e.g. `"https://api.example.com/users/"`)
    */

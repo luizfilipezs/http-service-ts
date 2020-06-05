@@ -1,4 +1,4 @@
 import { Service } from './service';
-import { HttpHandler } from './http.handler';
+import { RequestParser } from './request.parser';
 
-export { Service, HttpHandler };
+export { Service, RequestParser };

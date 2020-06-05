@@ -4,22 +4,27 @@
 
 This package is available in [npm](https://www.npmjs.com/package/http-service-ts). Install it in your project with the following command:
 
-`npm i http-service-ts`
+```bash
+npm i http-service-ts
+```
 
 ### Import
 
+CommonJS
+
 ```js
-const { HttpHandler, Service } = require('http-service-ts');
+const { RequestParser, Service } = require('http-service-ts');
 ```
 
-Or
+ES6
+
 ```ts
-import { HttpHandler, Service } from 'http-service-ts';
+import { RequestParser, Service } from 'http-service-ts';
 ```
 
 ## How to use
 
-### `HttpHandler` class
+### `RequestParser` class
 
 Allows to make requests and get their responses formatted. Returns new promise with content as `JSON`, text (`string`), `Blob` or `null`.
 
@@ -30,7 +35,7 @@ interface IP {
   ip: string;
 }
 
-const http = new HttpHandler();
+const http = new RequestParser();
 
 http.request<IP>({
   url: 'https://api6.ipify.org?format=json',
@@ -38,7 +43,7 @@ http.request<IP>({
 })
   .then(
     (response) => console.log(response.ip),
-    (error) => console.error(`There was an error: ${error}`)
+    (error) => console.error('Error! Server respond with: ', error)
   );
 ```
 
@@ -64,7 +69,7 @@ http.config.headers.append('Authorization', token);
 You can provide a root in `constructor`. So when you give an url to request, it will be concatenated with the root. As follows:
 
 ```ts
-const usersApi = new HttpHandler('https://api.example.com');
+const usersApi = new RequestParser('https://api.example.com');
 
 const promise = usersApi.get<User>({
   url: 'users',
@@ -80,7 +85,7 @@ Note that you don't need to put a slash (/) before the URI. It's optional.
 If server only supports requests with a `/` at the final of the URL, set `appendSlash` property to `true` in configurations:
 
 ```ts
-const api = new HttpHandler('https://api.example.com');
+const api = new RequestParser('https://api.example.com');
 api.config.appendSlash = true;
 
 api.request<User>({
@@ -90,26 +95,41 @@ api.request<User>({
 }); // Will fetch https://api.example.com/users/1/
 ```
 
+There is another way to set configurations for every request. You can pass them in constructor, as a second argument:
+
+```ts
+const api = new RequestParser('https://api.example.com', {
+  headers: new Headers({
+    Accept: 'application/json'
+  }),
+  appendSlash: true
+});
+```
+
 #### Search params
 
 Let's create our first example again with a different syntax. You can use search params:
 
 ```ts
-const http = new HttpHandler('https://api6.ipify.org');
+const http = new RequestParser('https://api6.ipify.org');
 
 http.request<IP>({
   method: 'get',
   params: {
     format: 'json'
   }
-}).then((response) => console.log(response.ip));
+})
+  .then(
+    (response) => console.log(response.ip),
+    (error) => console.error('Error! Server respond with: ', error)
+  );
 
 // fetch https://api6.ipify.org?format=json
 ```
 
 ### `Service` class
 
-The methods provided in `Service` class are: `get()`, `getById()`, `post()`, `put()`, `patch()` and `delete()`.
+The methods provided in `Service` class are: `get()`, `getById()`, `post()`, `put()`, `patch()` and `delete()`. This class extends `RequestParser`, so `request()` method is available too.
 
 You can use these methods for managing CRUD operations or write your own class extending `Service`. Example:
 
@@ -140,7 +160,7 @@ class HomeView {
   products: Product[] = [];
   errorMessage: string;
 
-  productService = new ProductService();
+  private productService = new ProductService();
   
   constructor() { }
 
@@ -160,9 +180,12 @@ class HomeView {
     this.setProducts(this.productService.getOffers());
   }
   
-  postProduct(obj: Product) {
-    this.productService.post(obj)
-      .then(console.log, console.error);
+  postProduct(product: Product) {
+    this.productService.post(product)
+      .then(
+        (success) => this.getProducts(),
+        (error) => this.errorMessage = 'There was an error trying to post product!'
+      );
   }
   
 }

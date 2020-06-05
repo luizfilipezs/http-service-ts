@@ -1,11 +1,11 @@
 /**
- * Allows `HttpHandler.request()` method to know what to request
+ * Allows `RequestParser.request()` method to know what to request
  * and how to do it.
  */
 interface RequestArgs<T> {
   /**
    * Full URL or last piece of it, if a root was provided
-   * in the constructor of `HttpHandler` class
+   * in the constructor of `RequestParser` class
    */
   url?: string;
   /**
@@ -14,7 +14,7 @@ interface RequestArgs<T> {
   method: 'get' | 'post' | 'put' | 'patch' | 'delete';
   /**
    * Define headers for current request, ignoring fixed headers
-   * defined in `HttpHandler.config.headers`
+   * defined in `RequestParser.config.headers`
    */
   headers?: Headers;
   /**
@@ -47,7 +47,7 @@ interface HttpConfig {
    */
   headers: Headers;
   /**
-   * If `true` a slash will always be appended to the end of the URL (when there is no one).
+   * If `true` a slash will be always appended to the end of the URL (when there is no one).
    */
   appendSlash: boolean;
 }
@@ -57,10 +57,10 @@ interface HttpConfig {
  *
  * Allows to make requests and save some configurations for future
  * requests too. Accepts an API root at the constructor that can be used
- * to fix a URL to fetch. If one be provided every future request will
+ * to fix an URL to fetch. If one be provided, every future request will
  * fetch this URL + the URL passed in `RequestArgs` interface.
  */
-export class HttpHandler {
+export class RequestParser {
   /**
    * Configure rules that will be aplied in every request.
    */
@@ -69,9 +69,11 @@ export class HttpHandler {
   /**
    * @param {string} [root] You can provide a value for root property
    * or simply pass one every time you access `request()` method.
+   * @param {HttpConfig} [config] Configurations that will be aplied
+   * in every request.
    */
-  constructor(private root?: string) {
-    this.config = {
+  constructor(private root?: string, config?: HttpConfig) {
+    this.config = config || {
       headers: new Headers(),
       appendSlash: false,
     };
@@ -80,19 +82,23 @@ export class HttpHandler {
   /**
    * @param {RequestArgs<T>} args Provide request configurations
    *
-   * @return {Promise<T>} Promise of type T
+   * @return {Promise<T>} Promise with parsed content
    */
   public async request<T>(args: RequestArgs<T>): Promise<T> {
     let url = '';
 
     // Add root if there's one
     if (this.root) url = this.root;
+
     // Concat root with URI if they were provided
     if (this.root && args.url) url += this.hasSlash(this.root, args.url) ? args.url : `/${args.url}`;
+
     // fetch URL provided in arguments
     if (!this.root && args.url) url = args.url;
+
     // add a slash
     if (this.config.appendSlash && !this.hasSlash(url)) url += '/';
+
     // add ID
     if (args.id) url += this.config.appendSlash ? `${args.id}/` : args.id.toString();
 
@@ -100,9 +106,12 @@ export class HttpHandler {
     if (args.params) {
       // Remove last slash and add a "?"
       if (url.endsWith('/')) url = url.substring(0, url.length - 1);
+
       url += '?';
+
       // Add params and remove last "&"
       for (const key in args.params) url += `${key}=${args.params[key]}&`;
+
       url = url.substring(0, url.length - 1);
     }
 
@@ -116,8 +125,11 @@ export class HttpHandler {
     // Add body if there is one
     if (args.method !== 'get' && args.obj) requestInit.body = JSON.stringify(args.obj);
 
-    // Request and parse response
-    return await fetch(url, requestInit).then((response) => this.parse<T>(response) as Promise<T>);
+    // Request
+    const req = await fetch(url, requestInit);
+
+    // Return promise with parsed content from response
+    return this.parse<T>(req) as Promise<T>;
   }
 
   /**
@@ -134,22 +146,22 @@ export class HttpHandler {
    *
    * @return {Promise<T | string | null | Blob>} Promise with formatted content
    */
-  private parse<T>(response: Response): Promise<T | string | null | Blob> {
+  private async parse<T>(response: Response): Promise<T | string | null | Blob> {
+    let p: T | string | null | Blob;
     const contentType = response.headers.get('content-type');
 
     if (contentType === 'application/json')
-      // JSON
-      return response.json();
+      // Object
+      p = await response.json();
+    else if (contentType && contentType.startsWith('text'))
+      // Text
+      p = await response.text();
+    else if (!contentType)
+      // Null
+      p = null;
+    // Blob
+    else p = await response.blob();
 
-    if (contentType && contentType.startsWith('text'))
-      // TEXT
-      return response.text();
-
-    if (!contentType)
-      // NULL
-      return new Promise((resolve) => resolve(null));
-
-    // BLOB
-    return response.blob();
+    return new Promise((resolve, reject) => (response.status >= 200 && response.status < 300 ? resolve(p) : reject(p)));
   }
 }
