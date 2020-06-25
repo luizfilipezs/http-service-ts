@@ -1,56 +1,5 @@
-/**
- * Allows `RequestParser.request()` method to know what to request
- * and how to do it.
- */
-interface RequestArgs<T> {
-  /**
-   * Full URL or last piece of it, if a root was provided
-   * in the constructor of `RequestParser` class
-   */
-  url?: string;
-  /**
-   * One of the main HTTP methods for managing objects in a table
-   */
-  method: 'get' | 'post' | 'put' | 'patch' | 'delete';
-  /**
-   * Define headers for current request, ignoring fixed headers
-   * defined in `RequestParser.config.headers`
-   */
-  headers?: Headers;
-  /**
-   * Request body
-   */
-  obj?: T;
-  /**
-   * ID of object (type `T`) in database collection
-   */
-  id?: number;
-  /**
-   * Define request mode. `true` sets to `'no-cors'`.
-   * If `null` request mode will be `'cors'`.
-   */
-  noCors?: true;
-  /**
-   * Object with search params (e.g. `{ q: 'code' }`)
-   */
-  params?: { [key: string]: string };
-}
-
-/**
- * Define basic configuration for future requests, as headers
- * and a boolean that allow `request()` method to know if it is necessary
- * to append a slash in the end of the URL.
- */
-interface HttpConfig {
-  /**
-   * Define headers that will be used in every request.
-   */
-  headers: Headers;
-  /**
-   * If `true` a slash will be always appended to the end of the URL (when there is no one).
-   */
-  appendSlash: boolean;
-}
+import RequestArgs from './request.args';
+import HttpConfig from './http.config';
 
 /**
  * @class
@@ -60,7 +9,7 @@ interface HttpConfig {
  * to fix an URL to fetch. If one be provided, every future request will
  * fetch this URL + the URL passed in `RequestArgs` interface.
  */
-export class RequestParser {
+export default class RequestParser {
   /**
    * Configure rules that will be aplied in every request.
    */

@@ -1,4 +1,5 @@
-import { RequestParser } from './request.parser';
+import RequestParser from './request.parser';
+import HttpConfig from './http.config';
 
 /**
  * @class
@@ -7,12 +8,12 @@ import { RequestParser } from './request.parser';
  * Extends `RequestParser` class. So it's possible to add more types of
  * request when extending this class.
  */
-export class Service<T> extends RequestParser {
+export default class Service<T> extends RequestParser {
   /**
    * @param {string} apiRoot Collection path (e.g. `"https://api.example.com/users/"`)
    */
-  constructor(apiRoot: string) {
-    super(apiRoot);
+  constructor(apiRoot: string, config?: HttpConfig) {
+    super(apiRoot, config);
   }
 
   /**
