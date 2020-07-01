@@ -4,9 +4,7 @@
 
 This package is available in [npm](https://www.npmjs.com/package/http-service-ts). Install it in your project with the following command:
 
-```bash
-npm i http-service-ts
-```
+`npm i http-service-ts`
 
 ### Import
 

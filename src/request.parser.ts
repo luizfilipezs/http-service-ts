@@ -31,7 +31,7 @@ export default class RequestParser {
   /**
    * @param {RequestArgs<T>} args Provide request configurations
    *
-   * @return {Promise<T>} Promise with parsed content
+   * @returns {Promise<T>} Promise with parsed content
    */
   public async request<T>(args: RequestArgs<T>): Promise<T> {
     let url = '';
@@ -85,7 +85,7 @@ export default class RequestParser {
    * @param {string} start First piece of URL (API root). E.g. `'https://api.example.com'`
    * @param {string} [final] Last piece of URL. E.g. `'users/12'`
    *
-   * @return {string} URL with a slash between its first and last pieces or a slash at the end of the first.
+   * @returns {string} URL with a slash between its first and last pieces or a slash at the end of the first.
    */
   private hasSlash = (start: string, end?: string) =>
     end ? start.endsWith('/') || end.startsWith('/') : start.endsWith('/');
@@ -93,7 +93,7 @@ export default class RequestParser {
   /**
    * @param {Response} response Response to turn into JSON, Text or Blob
    *
-   * @return {Promise<T | string | null | Blob>} Promise with formatted content
+   * @returns {Promise<T | string | null | Blob>} Promise with formatted content
    */
   private async parse<T>(response: Response): Promise<T | string | null | Blob> {
     let p: T | string | null | Blob;

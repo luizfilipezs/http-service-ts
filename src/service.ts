@@ -17,7 +17,7 @@ export default class Service<T> extends RequestParser {
   }
 
   /**
-   * @return {Promise<T[]>} Promise with array of objets
+   * @returns {Promise<T[]>} Promise with array of objets
    */
   get(): Promise<T[]> {
     return this.request<T[]>({ method: 'get' });
@@ -25,7 +25,7 @@ export default class Service<T> extends RequestParser {
 
   /**
    * @param {number} id Object ID to fetch
-   * @return {Promise<T>} A promise of object
+   * @returns {Promise<T>} A promise of object
    */
   getById(id: number): Promise<T> {
     return this.request<T>({ method: 'get', id });
@@ -33,7 +33,7 @@ export default class Service<T> extends RequestParser {
 
   /**
    * @param {T} obj Object to post
-   * @return {Promise<T>} Posted object
+   * @returns {Promise<T>} Posted object
    */
   post(obj: T): Promise<T> {
     return this.request<T>({ method: 'post', obj });
@@ -42,7 +42,7 @@ export default class Service<T> extends RequestParser {
   /**
    * @param {T} obj Object to update
    * @param {number} id ID of object that will be updated
-   * @return {Promise<T>} Updated object
+   * @returns {Promise<T>} Updated object
    */
   put(obj: T, id: number): Promise<T> {
     return this.request<T>({ method: 'put', obj, id });
@@ -51,7 +51,7 @@ export default class Service<T> extends RequestParser {
   /**
    * @param {Partial<T>} obj Object to update
    * @param {number} id ID of object that will be updated
-   * @return {Promise<Partial<T>>} Updated object part
+   * @returns {Promise<Partial<T>>} Updated object part
    */
   patch(obj: Partial<T>, id: number): Promise<Partial<T>> {
     return this.request<Partial<T>>({ method: 'patch', obj, id });
@@ -59,7 +59,7 @@ export default class Service<T> extends RequestParser {
 
   /**
    * @param {number} id ID of object that will be deleted
-   * @return {Promise<null>} Null
+   * @returns {Promise<null>} Null
    */
   delete(id: number): Promise<null> {
     return this.request<null>({ method: 'delete', id });
@@ -67,7 +67,7 @@ export default class Service<T> extends RequestParser {
 }
 
 /**
- * A partial object of generic type.
+ * Partial object of generic type
  */
 type Partial<T> = {
   [P in keyof T]?: T[P];
