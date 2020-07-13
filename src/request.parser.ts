@@ -49,7 +49,7 @@ export default class RequestParser {
     if (this.config.appendSlash && !this.hasSlash(url)) url += '/';
 
     // add ID
-    if (args.id) url += this.config.appendSlash ? `${args.id}/` : args.id.toString();
+    if (args.id) url += this.config.appendSlash ? args.id + '/' : args.id.toString();
 
     // Append search params to the end of URL
     if (args.params) {
@@ -66,7 +66,7 @@ export default class RequestParser {
 
     // Configure request
     const requestInit: RequestInit = {
-      method: args.method,
+      method: args.method.toUpperCase(),
       headers: args.headers || this.config.headers,
       mode: args.noCors === true ? 'no-cors' : 'cors',
     };
