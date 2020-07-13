@@ -1,5 +1,8 @@
 # http-service-ts
 
+[![npm](https://img.shields.io/npm/v/http-service-ts.svg)](https://www.npmjs.com/package/http-service-ts)
+![license](https://img.shields.io/badge/license-MIT-blue.svg)
+
 ## Installation
 
 This package is available in [npm](https://www.npmjs.com/package/http-service-ts). Install it in your project with the following command:
